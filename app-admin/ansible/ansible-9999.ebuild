@@ -3,9 +3,9 @@
 
 EAPI=6
 
-PYTHON_COMPAT=( python2_7 python3_5 )
+PYTHON_COMPAT=( python2_7 python3_4 )
 
-inherit distutils-r1 git-r3 eutils
+inherit distutils-r1 git-r3 eutils user
 
 DESCRIPTION="Model-driven deployment, config management, and command execution framework"
 HOMEPAGE="http://ansible.com/"
@@ -42,6 +42,11 @@ DEPEND="
 		dev-python/unittest2[${PYTHON_USEDEP}]
 		dev-vcs/git
 	)"
+
+pkg_setup() {
+	enewgroup ansible
+	enewuser ansible -1 -1 /var/lib/${PN} ansible
+}
 
 python_prepare_all() {
 	rm -fv MANIFEST.in || die
