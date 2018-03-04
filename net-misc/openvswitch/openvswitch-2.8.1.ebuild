@@ -66,6 +66,7 @@ src_configure() {
 
 	local linux_config
 	use modules && linux_config="--with-linux=${KV_OUT_DIR}"
+	use modules 
 
 	econf ${linux_config} \
 		--with-rundir=/var/run/openvswitch \

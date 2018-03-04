@@ -1,9 +1,7 @@
 # Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
-#
-#..dh.. remove kernel version contraints
-# 
+#..dh..
 
 EAPI=6
 
@@ -13,7 +11,14 @@ inherit autotools eutils linux-info linux-mod python-r1 systemd
 
 DESCRIPTION="Production quality, multilayer virtual switch"
 HOMEPAGE="http://openvswitch.org"
-SRC_URI="http://openvswitch.org/releases/${P}.tar.gz"
+
+if [[ ${PV} == *9999 ]]; then
+   EGIT_REPO_URI="http://github.com/openvswitch/ovs.git"
+   inherit git-r3
+else
+	SRC_URI="http://openvswitch.org/releases/${P}.tar.gz"
+fi
+
 
 LICENSE="Apache-2.0 GPL-2"
 SLOT="0"
@@ -37,7 +42,7 @@ DEPEND="${RDEPEND}
 PATCHES="${FILESDIR}/xcp-interface-reconfigure-2.3.2.patch"
 
 CONFIG_CHECK="~NET_CLS_ACT ~NET_CLS_U32 ~NET_SCH_INGRESS ~NET_ACT_POLICE ~IPV6 ~TUN"
-MODULE_NAMES="openvswitch(net:${S}/datapath/linux)"
+#MODULE_NAMES="openvswitch(net:${S}/datapath/linux)"
 BUILD_TARGETS="all"
 
 pkg_setup() {
@@ -54,9 +59,9 @@ pkg_setup() {
 
 src_prepare() {
 	# Never build kernelmodules, doing this manually
-	sed -i \
-		-e '/^SUBDIRS/d' \
-		datapath/Makefile.in || die "sed failed"
+	#sed -i \
+	#	-e '/^SUBDIRS/d' \
+	#	datapath/Makefile.in || die "sed failed"
 	eautoreconf
 	default
 }
@@ -70,6 +75,7 @@ src_configure() {
 
 	local linux_config
 	use modules && linux_config="--with-linux=${KV_OUT_DIR}"
+	use modules 
 
 	econf ${linux_config} \
 		--with-rundir=/var/run/openvswitch \
